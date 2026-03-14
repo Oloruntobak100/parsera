@@ -19,7 +19,9 @@ History is written only from the server. RLS is on with no policies for `anon`, 
 
 ## Vercel
 
-Add: `PARSERA_API_KEY`, `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`.
+1. **Framework:** choose **Next.js** (or import repo and let Vercel auto-detect).  
+2. **Do not set** a custom **Output Directory** (leave blank). If you see *“No Output Directory named public”*, open **Settings → General** and clear **Output Directory**, set **Framework Preset** to **Next.js**.  
+3. **Env:** `PARSERA_API_KEY`, `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`.
 
 ## Dev
 
