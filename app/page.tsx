@@ -20,6 +20,7 @@ import { ResultsTable, countResults } from '@/components/ResultsTable'
 import { ExportButtons } from '@/components/ExportButtons'
 import { HistoryPanel } from '@/components/HistoryPanel'
 import { FieldLabel } from '@/components/FieldLabel'
+import { EmptyScrapeBanner } from '@/components/EmptyScrapeHint'
 
 const PROXY_COUNTRIES = [
   { value: 'UnitedStates', label: 'United States' },
@@ -432,6 +433,7 @@ export default function HomePage() {
                   <ExportButtons data={result} baseFilename={slug} />
                 </div>
                 <div className="min-h-0 flex-1 overflow-auto">
+                  <EmptyScrapeBanner data={result} />
                   <ResultsTable data={result} />
                 </div>
               </>

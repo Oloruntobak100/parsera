@@ -27,11 +27,25 @@ export function buildParseraPayload(body: {
     attributes[a.name.trim()] = a.description.trim()
   }
 
+  const promptTrim = body.prompt?.trim() ?? ''
+  /**
+   * Prompt-only with {} often yields data: [] from Parsera — they expect named
+   * attributes. Inject explicit fields so the model has concrete outputs.
+   */
+  if (Object.keys(attributes).length === 0 && promptTrim) {
+    attributes.summary =
+      `Answer in depth: ${promptTrim}. Explain what the page/site is about, who it is for, main themes, products or services if any, and any clear calls-to-action. Use complete sentences.`
+    attributes.key_points =
+      'Extract the most important facts, sections, or claims from the page as a concise bullet-style list (plain text, one line per point).'
+    attributes.page_type =
+      'One short phrase: what kind of page this is (e.g. marketing homepage, blog, SaaS landing, directory).'
+  }
+
   const payload: ParseraExtractWirePayload = {
     url: body.url.trim(),
     attributes,
   }
-  if (body.prompt?.trim()) payload.prompt = body.prompt.trim()
+  if (promptTrim) payload.prompt = promptTrim
   if (body.mode === 'precision' || body.mode === 'standard') {
     payload.mode = body.mode
   }
