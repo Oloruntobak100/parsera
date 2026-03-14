@@ -20,35 +20,26 @@ export function AttributesBuilder({ rows, onChange }: Props) {
   }
 
   const inputRow =
-    'w-full rounded-lg border border-white/10 bg-surface-input px-3 py-2.5 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-accent/40 sm:flex-1'
+    'w-full rounded-lg border border-white/10 bg-surface-input px-3 py-2.5 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-white/20 sm:flex-1'
 
   return (
-    <div className="space-y-3 rounded-xl border border-accent/20 bg-accent/5 p-4">
+    <div className="space-y-3 rounded-xl border border-white/10 bg-black/20 p-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <span className="inline-flex rounded-md bg-accent px-2 py-0.5 font-display text-xs font-bold uppercase tracking-wider text-zinc-900">
-            Columns
-          </span>
-          <span className="text-xs text-zinc-500">
-            Field names become JSON keys
-          </span>
-        </div>
+        <p className="text-sm text-zinc-400">
+          Extra fields <span className="text-zinc-500">(optional)</span>
+        </p>
         <button
           type="button"
           onClick={add}
-          className="inline-flex items-center gap-1.5 rounded-lg bg-accent px-3 py-2 text-sm font-bold text-zinc-900 shadow-glow-sm hover:brightness-110"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-sm font-medium text-zinc-200 hover:bg-white/10"
         >
           <Plus className="h-4 w-4" />
           Add field
         </button>
       </div>
       {rows.length === 0 ? (
-        <p className="text-sm leading-relaxed text-zinc-500">
-          Optional if you use a prompt below. Each row:{' '}
-          <span className="font-medium text-accent-glow">Name</span> = column
-          key,{' '}
-          <span className="font-medium text-accent-glow">Description</span> =
-          what to extract.
+        <p className="text-sm text-zinc-500">
+          Or skip and use the prompt only. Each row: label + what to grab.
         </p>
       ) : (
         <ul className="space-y-3">
@@ -58,24 +49,24 @@ export function AttributesBuilder({ rows, onChange }: Props) {
               className="flex flex-col gap-2 rounded-xl border border-white/10 bg-black/30 p-3 sm:flex-row sm:items-start"
             >
               <div className="flex-1 space-y-1 sm:max-w-[40%]">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-accent">
-                  Name
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">
+                  Label
                 </span>
                 <input
                   type="text"
-                  placeholder="e.g. title, price"
+                  placeholder="e.g. Title"
                   value={row.name}
                   onChange={(e) => update(i, 'name', e.target.value)}
                   className={inputRow + ' w-full'}
                 />
               </div>
               <div className="min-w-0 flex-[2] space-y-1">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-accent">
-                  Description
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">
+                  What to grab
                 </span>
                 <input
                   type="text"
-                  placeholder="What to pull from the page"
+                  placeholder="e.g. main headline"
                   value={row.description}
                   onChange={(e) => update(i, 'description', e.target.value)}
                   className={inputRow + ' w-full'}
