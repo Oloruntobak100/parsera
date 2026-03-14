@@ -11,7 +11,6 @@ import {
   X,
 } from 'lucide-react'
 import { ResultsTable } from '@/components/ResultsTable'
-import { ExportButtons } from '@/components/ExportButtons'
 
 export type HistoryListRow = {
   id: string
@@ -283,12 +282,6 @@ export function HistoryPanel({ refreshKey }: { refreshKey: number }) {
                   </dl>
                   {detail.status === 'success' && detail.result != null && (
                     <>
-                      <div className="mb-3 flex flex-wrap gap-2">
-                        <ExportButtons
-                          data={detail.result}
-                          baseFilename="history-export"
-                        />
-                      </div>
                       <ResultsTable
                         data={detail.result}
                         extractedAt={new Date(detail.created_at)}

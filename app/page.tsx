@@ -17,7 +17,6 @@ import {
   type AttributeRow,
 } from '@/components/AttributesBuilder'
 import { ResultsTable, countResults } from '@/components/ResultsTable'
-import { ExportButtons } from '@/components/ExportButtons'
 import { HistoryPanel } from '@/components/HistoryPanel'
 import { FieldLabel } from '@/components/FieldLabel'
 import { EmptyScrapeBanner } from '@/components/EmptyScrapeHint'
@@ -424,12 +423,9 @@ export default function HomePage() {
             )}
             {!loading && result != null && (
               <>
-                <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-                  <p className="text-sm font-medium text-zinc-400">
-                    {n > 0 ? `${n} row${n !== 1 ? 's' : ''}` : 'Result'}
-                  </p>
-                  <ExportButtons data={result} baseFilename={slug} />
-                </div>
+                <p className="mb-3 text-sm font-medium text-zinc-400">
+                  {n > 0 ? `${n} row${n !== 1 ? 's' : ''}` : 'Result'}
+                </p>
                 <div className="min-h-0 flex-1 overflow-auto">
                   <EmptyScrapeBanner data={result} />
                   <ResultsTable
