@@ -289,7 +289,11 @@ export function HistoryPanel({ refreshKey }: { refreshKey: number }) {
                           baseFilename="history-export"
                         />
                       </div>
-                      <ResultsTable data={detail.result} />
+                      <ResultsTable
+                        data={detail.result}
+                        extractedAt={new Date(detail.created_at)}
+                        baseFilename="history-export"
+                      />
                     </>
                   )}
                   {detail.status === 'error' && (

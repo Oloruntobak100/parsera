@@ -55,6 +55,7 @@ export default function HomePage() {
   const [result, setResult] = useState<unknown>(null)
   const [modeTip, setModeTip] = useState(false)
   const [historyRefresh, setHistoryRefresh] = useState(0)
+  const [resultAt, setResultAt] = useState<Date | null>(null)
 
   const addCookie = () => setCookies([...cookies, { name: '', value: '' }])
   const removeCookie = (i: number) =>
@@ -125,6 +126,7 @@ export default function HomePage() {
         return
       }
       setResult(data)
+      setResultAt(new Date())
     } catch {
       setError('Network error. Try again.')
     } finally {
@@ -422,19 +424,19 @@ export default function HomePage() {
             )}
             {!loading && result != null && (
               <>
-                <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
                   <p className="text-sm font-medium text-zinc-400">
-                    {Array.isArray(result)
-                      ? `${n} row${n !== 1 ? 's' : ''}`
-                      : n
-                        ? '1 object'
-                        : 'Result'}
+                    {n > 0 ? `${n} row${n !== 1 ? 's' : ''}` : 'Result'}
                   </p>
                   <ExportButtons data={result} baseFilename={slug} />
                 </div>
                 <div className="min-h-0 flex-1 overflow-auto">
                   <EmptyScrapeBanner data={result} />
-                  <ResultsTable data={result} />
+                  <ResultsTable
+                    data={result}
+                    extractedAt={resultAt}
+                    baseFilename={slug}
+                  />
                 </div>
               </>
             )}

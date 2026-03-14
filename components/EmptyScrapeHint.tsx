@@ -1,11 +1,15 @@
 'use client'
 
+import { resultTableRows } from '@/lib/export'
+
 /** Parsera-style response when nothing was extracted */
 export function emptyScrapeResponse(data: unknown): {
   empty: boolean
   message?: string
   isPaginated?: boolean
 } {
+  const rows = resultTableRows(data)
+  if (rows.length > 0) return { empty: false }
   if (data == null || typeof data !== 'object') return { empty: false }
   const o = data as Record<string, unknown>
   const arr = o.data
