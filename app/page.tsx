@@ -145,15 +145,17 @@ export default function HomePage() {
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
       {/* Hero — sample 1 badge + sample 2 headline weight */}
       <header className="mb-12 text-center">
-        <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-sm text-zinc-400">
-          <Sparkles className="h-4 w-4 text-zinc-500" aria-hidden />
-          Scraper
+        <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-accent px-4 py-1.5 text-sm font-bold text-zinc-900 shadow-glow-sm">
+          <Sparkles className="h-4 w-4" aria-hidden />
+          Parsera API
         </div>
         <h1 className="font-display text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl">
           Scraper
         </h1>
         <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-zinc-400 sm:text-lg">
-          URL in, data out — export CSV or Excel when you’re done.
+          Enter a URL, describe what to extract, run — then export{' '}
+          <span className="text-accent-glow">CSV</span> or{' '}
+          <span className="text-accent-glow">Excel</span>.
         </p>
       </header>
 
@@ -164,7 +166,7 @@ export default function HomePage() {
           className="panel-card flex flex-col rounded-2xl p-6 sm:p-8"
         >
           <div className="mb-6 flex items-center gap-3 border-b border-white/10 pb-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 text-zinc-400">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent/15 text-accent">
               <LayoutGrid className="h-5 w-5" aria-hidden />
             </div>
             <div>
@@ -188,7 +190,7 @@ export default function HomePage() {
             )}
 
             <div>
-              <FieldLabel name="URL" htmlFor="url" required />
+              <FieldLabel name="URL" htmlFor="url" required hint="Page to scrape" />
               <input
                 id="url"
                 type="url"
@@ -206,10 +208,11 @@ export default function HomePage() {
               <FieldLabel
                 name="Prompt"
                 htmlFor="prompt"
+                pill={false}
                 hint={
                   attributes.some((a) => a.name && a.description)
-                    ? 'Optional'
-                    : 'Needed if you add no fields above'
+                    ? 'Optional if you added fields above'
+                    : 'Say what to extract if you didn’t add fields'
                 }
               />
               <textarea
@@ -228,7 +231,7 @@ export default function HomePage() {
                   <span className="text-sm font-semibold text-zinc-200">Mode</span>
                   <button
                     type="button"
-                    className="text-zinc-500 hover:text-zinc-300"
+                    className="text-zinc-500 hover:text-accent"
                     aria-label="Mode help"
                     onClick={() => setModeTip(!modeTip)}
                     onBlur={() => setTimeout(() => setModeTip(false), 200)}
@@ -238,10 +241,10 @@ export default function HomePage() {
                 </div>
                 {modeTip && (
                   <div className="mb-2 rounded-lg border border-white/10 bg-surface-input p-3 text-xs text-zinc-400">
-                    <strong className="text-zinc-300">Standard:</strong> faster.
+                    <strong className="text-accent">Standard:</strong> fast.
                     <br />
-                    <strong className="text-zinc-300">Precision:</strong> deeper
-                    page read.
+                    <strong className="text-accent">Precision:</strong> deeper
+                    page; more credits.
                   </div>
                 )}
                 <div className="flex gap-4 rounded-xl border border-white/10 bg-surface-input/50 px-4 py-3 text-sm text-zinc-300">
@@ -251,7 +254,7 @@ export default function HomePage() {
                       name="mode"
                       checked={mode === 'standard'}
                       onChange={() => setMode('standard')}
-                      className="border-white/20 bg-surface-input text-zinc-200 focus:ring-white/20"
+                      className="border-white/20 bg-surface-input text-accent focus:ring-accent"
                     />
                     Standard
                   </label>
@@ -261,14 +264,19 @@ export default function HomePage() {
                       name="mode"
                       checked={mode === 'precision'}
                       onChange={() => setMode('precision')}
-                      className="border-white/20 bg-surface-input text-zinc-200 focus:ring-white/20"
+                      className="border-white/20 bg-surface-input text-accent focus:ring-accent"
                     />
                     Precision
                   </label>
                 </div>
               </div>
               <div>
-                <FieldLabel name="Proxy" htmlFor="proxy" hint="Request region" />
+                <FieldLabel
+                  name="Proxy"
+                  htmlFor="proxy"
+                  pill={false}
+                  hint="Country for request"
+                />
                 <select
                   id="proxy"
                   value={proxyCountry}
@@ -294,11 +302,13 @@ export default function HomePage() {
                 onClick={() => setCookiesOpen(!cookiesOpen)}
                 className="flex w-full items-center justify-between px-4 py-3 text-left text-sm font-medium text-zinc-200 hover:bg-white/5"
               >
-                <span>Cookies (optional)</span>
+                <span className="text-sm font-semibold text-zinc-200">
+                  Cookies (optional)
+                </span>
                 {cookiesOpen ? (
-                  <ChevronUp className="h-4 w-4 text-zinc-500" />
+                  <ChevronUp className="h-4 w-4 text-accent" />
                 ) : (
-                  <ChevronDown className="h-4 w-4 text-zinc-500" />
+                  <ChevronDown className="h-4 w-4 text-accent" />
                 )}
               </button>
               {cookiesOpen && (
@@ -333,7 +343,7 @@ export default function HomePage() {
                   <button
                     type="button"
                     onClick={addCookie}
-                    className="text-sm font-medium text-zinc-400 hover:text-zinc-200 hover:underline"
+                    className="text-sm font-medium text-accent hover:text-accent-glow hover:underline"
                   >
                     + Add cookie
                   </button>
@@ -378,7 +388,7 @@ export default function HomePage() {
 
         <section className="panel-card flex flex-col rounded-2xl p-6 sm:p-8">
           <div className="mb-6 flex items-center gap-3 border-b border-white/10 pb-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 text-zinc-400">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent/20 text-accent">
               <Table2 className="h-5 w-5" aria-hidden />
             </div>
             <div>
@@ -395,10 +405,10 @@ export default function HomePage() {
             {loading && (
               <div className="flex flex-1 flex-col items-center justify-center gap-3 py-16 text-zinc-500">
                 <Loader2
-                  className="h-10 w-10 animate-spin text-zinc-500"
+                  className="h-10 w-10 animate-spin text-accent"
                   aria-hidden
                 />
-                <span className="text-sm">Working…</span>
+                <span className="text-sm">Calling Parsera…</span>
               </div>
             )}
             {!loading && result == null && !error && (

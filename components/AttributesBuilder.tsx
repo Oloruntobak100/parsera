@@ -20,18 +20,15 @@ export function AttributesBuilder({ rows, onChange }: Props) {
   }
 
   const inputRow =
-    'w-full rounded-lg border border-white/10 bg-surface-input px-3 py-2.5 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-white/20 sm:flex-1'
+    'w-full rounded-lg border border-white/10 bg-surface-input px-3 py-2.5 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-accent/40 sm:flex-1'
 
   return (
-    <div className="space-y-3 rounded-xl border border-white/10 bg-black/20 p-4">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="text-sm text-zinc-400">
-          Extra fields <span className="text-zinc-500">(optional)</span>
-        </p>
+    <div className="space-y-3 rounded-xl border border-accent/20 bg-accent/5 p-4">
+      <div className="flex flex-wrap items-center justify-end gap-2">
         <button
           type="button"
           onClick={add}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-sm font-medium text-zinc-200 hover:bg-white/10"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-accent px-3 py-2 text-sm font-bold text-zinc-900 shadow-glow-sm hover:brightness-110"
         >
           <Plus className="h-4 w-4" />
           Add field
@@ -39,7 +36,7 @@ export function AttributesBuilder({ rows, onChange }: Props) {
       </div>
       {rows.length === 0 ? (
         <p className="text-sm text-zinc-500">
-          Or skip and use the prompt only. Each row: label + what to grab.
+          Optional. Each row: short label + what to pull from the page.
         </p>
       ) : (
         <ul className="space-y-3">
@@ -49,24 +46,24 @@ export function AttributesBuilder({ rows, onChange }: Props) {
               className="flex flex-col gap-2 rounded-xl border border-white/10 bg-black/30 p-3 sm:flex-row sm:items-start"
             >
               <div className="flex-1 space-y-1 sm:max-w-[40%]">
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">
-                  Label
+                <span className="text-[10px] font-bold uppercase tracking-wider text-accent">
+                  Name
                 </span>
                 <input
                   type="text"
-                  placeholder="e.g. Title"
+                  placeholder="e.g. title, price"
                   value={row.name}
                   onChange={(e) => update(i, 'name', e.target.value)}
                   className={inputRow + ' w-full'}
                 />
               </div>
               <div className="min-w-0 flex-[2] space-y-1">
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">
-                  What to grab
+                <span className="text-[10px] font-bold uppercase tracking-wider text-accent">
+                  Description
                 </span>
                 <input
                   type="text"
-                  placeholder="e.g. main headline"
+                  placeholder="What to pull from the page"
                   value={row.description}
                   onChange={(e) => update(i, 'description', e.target.value)}
                   className={inputRow + ' w-full'}

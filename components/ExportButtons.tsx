@@ -23,28 +23,32 @@ export function ExportButtons({ data, baseFilename = 'parsera-export' }: Props) 
 
   if (rows.length === 0) return null
 
-  const btn =
-    'inline-flex items-center gap-2 rounded-lg border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-zinc-200 hover:bg-white/10'
+  const ghost =
+    'inline-flex items-center gap-2 rounded-lg border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-zinc-200 hover:border-accent/40 hover:bg-white/10'
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <button type="button" onClick={() => exportToCSV(rows, safeName)} className={btn}>
-        <FileText className="h-4 w-4 text-zinc-500" />
+      <button
+        type="button"
+        onClick={() => exportToCSV(rows, safeName)}
+        className={ghost}
+      >
+        <FileText className="h-4 w-4 text-accent" />
         Export CSV
       </button>
       <button
         type="button"
         onClick={() => exportToExcel(rows, safeName)}
-        className={btn}
+        className="inline-flex items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-bold uppercase tracking-wide text-zinc-900 shadow-glow-sm hover:brightness-110"
       >
-        <FileSpreadsheet className="h-4 w-4 text-zinc-500" />
+        <FileSpreadsheet className="h-4 w-4" />
         Export Excel
       </button>
-      <button type="button" onClick={copyJson} className={btn}>
+      <button type="button" onClick={copyJson} className={ghost}>
         {copied ? (
-          <Check className="h-4 w-4 text-zinc-400" />
+          <Check className="h-4 w-4 text-accent" />
         ) : (
-          <Copy className="h-4 w-4 text-zinc-500" />
+          <Copy className="h-4 w-4 text-zinc-400" />
         )}
         {copied ? 'Copied' : 'Copy JSON'}
       </button>
