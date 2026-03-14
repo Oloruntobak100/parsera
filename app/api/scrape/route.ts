@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import {
   buildParseraPayload,
   validateExtractPayload,
+  attributesAsArray,
 } from '@/lib/parsera'
 import { getServiceSupabase } from '@/lib/supabase-server'
 
@@ -33,7 +34,7 @@ export async function POST(req: NextRequest) {
     const rowBase = {
       url: payload.url,
       prompt: payload.prompt ?? null,
-      attributes: payload.attributes ?? [],
+      attributes: attributesAsArray(payload.attributes),
       mode: payload.mode ?? 'standard',
       proxy_country: payload.proxy_country ?? 'UnitedStates',
       cookies: payload.cookies ?? [],
