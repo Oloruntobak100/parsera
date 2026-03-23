@@ -61,18 +61,18 @@ export function ResultsTable({ data, extractedAt, baseFilename = 'export' }: Pro
           </div>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[520px] text-left text-sm">
+          <table className="w-full min-w-[520px] border-collapse text-left text-sm">
             <thead>
-              <tr className="border-b border-white/10 bg-black/30">
+              <tr className="border-b border-white/20 bg-black/40">
                 {showHash && (
-                  <th className="w-12 px-3 py-3 text-xs font-semibold uppercase tracking-wide text-zinc-500">
+                  <th className="px-3 py-3 text-xs font-semibold uppercase tracking-wider text-zinc-500">
                     #
                   </th>
                 )}
                 {keys.map((k) => (
                   <th
                     key={k}
-                    className="px-4 py-3 text-xs font-semibold lowercase tracking-wide text-zinc-400"
+                    className="border-r border-white/10 px-4 py-3 text-left text-xs font-semibold lowercase tracking-wide text-zinc-400 last:border-r-0"
                   >
                     {k}
                   </th>
@@ -83,17 +83,19 @@ export function ResultsTable({ data, extractedAt, baseFilename = 'export' }: Pro
               {rows.map((row, i) => (
                 <tr
                   key={i}
-                  className="border-b border-white/[0.06] hover:bg-white/[0.02]"
+                  className="border-b border-white/[0.08] hover:bg-white/[0.04] transition-colors"
                 >
                   {showHash && (
-                    <td className="px-3 py-3 tabular-nums text-zinc-500">{i + 1}</td>
+                    <td className="border-r border-white/5 px-3 py-3 tabular-nums text-zinc-500">
+                      {i + 1}
+                    </td>
                   )}
                   {keys.map((k) => (
                     <td
                       key={k}
-                      className="max-w-[min(28rem,40vw)] px-4 py-3 text-zinc-200"
+                      className="border-r border-white/5 px-4 py-3 text-zinc-200 last:border-r-0"
                     >
-                      <span className="line-clamp-4 whitespace-pre-wrap break-words">
+                      <span className="line-clamp-4 block whitespace-pre-wrap break-words">
                         {formatCell(row[k])}
                       </span>
                     </td>
