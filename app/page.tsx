@@ -58,8 +58,8 @@ export default function HomePage() {
   const [historyRefresh, setHistoryRefresh] = useState(0)
   const [resultAt, setResultAt] = useState<Date | null>(null)
   const [activeTab, setActiveTab] = useState<'results' | 'history'>('results')
-  const [requestExpanded, setRequestExpanded] = useState(false)
-  const [optionsExpanded, setOptionsExpanded] = useState(false)
+  const [requestExpanded, setRequestExpanded] = useState(true)
+  const [optionsExpanded, setOptionsExpanded] = useState(true)
 
   const addCookie = () => setCookies([...cookies, { name: '', value: '' }])
   const removeCookie = (i: number) =>
