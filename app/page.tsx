@@ -9,8 +9,8 @@ import {
   Sparkles,
   Play,
   Zap,
-  LayoutGrid,
   Table2,
+  History,
 } from 'lucide-react'
 import { normalizeUrl } from '@/lib/parsera'
 import {
@@ -57,6 +57,9 @@ export default function HomePage() {
   const [modeTip, setModeTip] = useState(false)
   const [historyRefresh, setHistoryRefresh] = useState(0)
   const [resultAt, setResultAt] = useState<Date | null>(null)
+  const [activeTab, setActiveTab] = useState<'results' | 'history'>('results')
+  const [requestExpanded, setRequestExpanded] = useState(true)
+  const [optionsExpanded, setOptionsExpanded] = useState(false)
 
   const addCookie = () => setCookies([...cookies, { name: '', value: '' }])
   const removeCookie = (i: number) =>
@@ -97,6 +100,7 @@ export default function HomePage() {
     }
     setLoading(true)
     setResult(null)
+    setActiveTab('results')
     try {
       const attrs = attributes.filter(
         (a) => a.name.trim() && a.description.trim()
@@ -147,303 +151,360 @@ export default function HomePage() {
   })()
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
-      {/* Hero — sample 1 badge + sample 2 headline weight */}
-      <header className="mb-12 text-center">
-        <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-accent px-4 py-1.5 text-sm font-bold text-zinc-900 shadow-glow-sm">
-          <Sparkles className="h-4 w-4" aria-hidden />
-          Parsera API
+    <div className="flex min-h-screen flex-col">
+      {/* Compact header */}
+      <header className="shrink-0 border-b border-white/10 px-4 py-4 sm:px-6">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 rounded-full bg-accent px-3 py-1.5 text-sm font-bold text-zinc-900">
+              <Sparkles className="h-4 w-4" aria-hidden />
+              Parsera API
+            </div>
+            <h1 className="font-display text-xl font-bold text-white sm:text-2xl">
+              Scraper
+            </h1>
+          </div>
         </div>
-        <h1 className="font-display text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl">
-          Scraper
-        </h1>
-        <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-zinc-400 sm:text-lg">
-          Enter a URL, describe what to extract, run — then export{' '}
-          <span className="text-accent-glow">CSV</span> or{' '}
-          <span className="text-accent-glow">Excel</span>.
-        </p>
       </header>
 
-      {/* Two clear panels — labels like a product UI */}
-      <div className="grid gap-6 lg:grid-cols-2 lg:items-stretch lg:gap-8">
-        <form
-          onSubmit={submit}
-          className="panel-card flex flex-col rounded-2xl p-6 sm:p-8"
-        >
-          <div className="mb-6 flex items-center gap-3 border-b border-white/10 pb-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent/15 text-accent">
-              <LayoutGrid className="h-5 w-5" aria-hidden />
-            </div>
-            <div>
-              <h2 className="font-display text-lg font-bold text-white">
+      {/* Request bar — collapsible, ~25% */}
+      <div className="shrink-0 border-b border-white/10 px-4 py-3 sm:px-6">
+        <form onSubmit={submit} className="panel-card rounded-2xl p-4 sm:p-6">
+            {/* Collapsible header */}
+            <button
+              type="button"
+              onClick={() => setRequestExpanded(!requestExpanded)}
+              className="flex w-full items-center justify-between gap-2 py-1 text-left"
+            >
+              <span className="text-sm font-semibold text-zinc-200">
                 Request
-              </h2>
-              <p className="text-xs text-zinc-500">
-                URL, fields, prompt &amp; options
-              </p>
-            </div>
-          </div>
+              </span>
+              {requestExpanded ? (
+                <ChevronUp className="h-4 w-4 text-accent" />
+              ) : (
+                <ChevronDown className="h-4 w-4 text-accent" />
+              )}
+            </button>
 
-          <div className="flex flex-1 flex-col space-y-6">
-            {error && (
-              <div
-                className="rounded-xl border border-red-500/30 bg-red-950/40 px-4 py-3 text-sm text-red-200"
-                role="alert"
-              >
-                {error}
+            {requestExpanded && (
+              <div className="space-y-4 pt-2">
+                {/* Instructional note */}
+                <div className="rounded-lg border border-accent/20 bg-accent/5 px-3 py-2 text-xs text-zinc-400">
+                  <strong className="text-accent">Column-based</strong> (Add
+                  field): Define columns like <code className="rounded bg-black/30 px-1">item</code>,{' '}
+                  <code className="rounded bg-black/30 px-1">price</code> for structured table output — ideal for
+                  lists and exports. <strong className="text-accent">Text-based</strong> (Prompt
+                  only): Describe what to extract for summaries or free-form
+                  results.
+                </div>
+
+                {error && (
+                  <div
+                    className="rounded-xl border border-red-500/30 bg-red-950/40 px-4 py-2 text-sm text-red-200"
+                    role="alert"
+                  >
+                    {error}
+                  </div>
+                )}
+
+                {/* Horizontal primary row */}
+                <div className="flex flex-wrap items-end gap-3">
+                  <div className="min-w-[200px] flex-1">
+                    <FieldLabel name="URL" htmlFor="url" required hint="Page to scrape" />
+                    <input
+                      id="url"
+                      type="text"
+                      required
+                      placeholder="example.com/page or https://..."
+                      value={url}
+                      onChange={(e) => setUrl(e.target.value)}
+                      className={inputClass}
+                    />
+                  </div>
+                  <div className="min-w-[200px] flex-[2]">
+                    <FieldLabel
+                      name="Prompt"
+                      htmlFor="prompt"
+                      pill={false}
+                      hint={
+                        attributes.some((a) => a.name && a.description)
+                          ? 'Optional if you added fields'
+                          : 'What to extract'
+                      }
+                    />
+                    <textarea
+                      id="prompt"
+                      rows={2}
+                      placeholder="e.g. Extract all product titles and prices."
+                      value={prompt}
+                      onChange={(e) => setPrompt(e.target.value)}
+                      className={inputClass}
+                    />
+                  </div>
+                  <div className="run-scrape-shell shrink-0">
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="run-scrape-btn"
+                    >
+                      {loading ? (
+                        <>
+                          <Loader2 className="h-5 w-5 shrink-0 animate-spin text-zinc-900" />
+                          <span>Running…</span>
+                        </>
+                      ) : (
+                        <>
+                          <Zap className="h-5 w-5 shrink-0 text-zinc-900" fill="currentColor" />
+                          <span>Run scrape</span>
+                          <Play className="h-4 w-4 shrink-0 text-zinc-900 opacity-80" />
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Collapsible Options */}
+                <div className="overflow-hidden rounded-xl border border-white/10">
+                  <button
+                    type="button"
+                    onClick={() => setOptionsExpanded(!optionsExpanded)}
+                    className="flex w-full items-center justify-between px-4 py-2.5 text-left text-sm font-medium text-zinc-200 hover:bg-white/5"
+                  >
+                    <span>Options &amp; fields</span>
+                    {optionsExpanded ? (
+                      <ChevronUp className="h-4 w-4 text-accent" />
+                    ) : (
+                      <ChevronDown className="h-4 w-4 text-accent" />
+                    )}
+                  </button>
+                  {optionsExpanded && (
+                    <div className="space-y-4 border-t border-white/10 p-4">
+                      <AttributesBuilder
+                        rows={attributes}
+                        onChange={setAttributes}
+                        collapsible
+                      />
+                      <div className="grid gap-4 sm:grid-cols-2">
+                        <div>
+                          <div className="mb-2 flex items-center gap-2">
+                            <span className="text-sm font-semibold text-zinc-200">Mode</span>
+                            <button
+                              type="button"
+                              className="text-zinc-500 hover:text-accent"
+                              aria-label="Mode help"
+                              onClick={() => setModeTip(!modeTip)}
+                              onBlur={() => setTimeout(() => setModeTip(false), 200)}
+                            >
+                              <HelpCircle className="h-4 w-4" />
+                            </button>
+                          </div>
+                          {modeTip && (
+                            <div className="mb-2 rounded-lg border border-white/10 bg-surface-input p-3 text-xs text-zinc-400">
+                              <strong className="text-accent">Standard:</strong> fast.{' '}
+                              <strong className="text-accent">Precision:</strong> deeper page; more credits.
+                            </div>
+                          )}
+                          <div className="flex gap-4 rounded-xl border border-white/10 bg-surface-input/50 px-4 py-3 text-sm text-zinc-300">
+                            <label className="flex cursor-pointer items-center gap-2">
+                              <input
+                                type="radio"
+                                name="mode"
+                                checked={mode === 'standard'}
+                                onChange={() => setMode('standard')}
+                                className="border-white/20 bg-surface-input text-accent focus:ring-accent"
+                              />
+                              Standard
+                            </label>
+                            <label className="flex cursor-pointer items-center gap-2">
+                              <input
+                                type="radio"
+                                name="mode"
+                                checked={mode === 'precision'}
+                                onChange={() => setMode('precision')}
+                                className="border-white/20 bg-surface-input text-accent focus:ring-accent"
+                              />
+                              Precision
+                            </label>
+                          </div>
+                        </div>
+                        <div>
+                          <FieldLabel name="Proxy" htmlFor="proxy" pill={false} hint="Country" />
+                          <select
+                            id="proxy"
+                            value={proxyCountry}
+                            onChange={(e) => setProxyCountry(e.target.value)}
+                            className={`${inputClass} cursor-pointer`}
+                          >
+                            {PROXY_COUNTRIES.map((c) => (
+                              <option key={c.value} value={c.value} className="bg-surface-input text-white">
+                                {c.label}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                      <div className="overflow-hidden rounded-xl border border-white/10">
+                        <button
+                          type="button"
+                          onClick={() => setCookiesOpen(!cookiesOpen)}
+                          className="flex w-full items-center justify-between px-4 py-3 text-left text-sm font-medium text-zinc-200 hover:bg-white/5"
+                        >
+                          <span>Cookies (optional)</span>
+                          {cookiesOpen ? (
+                            <ChevronUp className="h-4 w-4 text-accent" />
+                          ) : (
+                            <ChevronDown className="h-4 w-4 text-accent" />
+                          )}
+                        </button>
+                        {cookiesOpen && (
+                          <div className="space-y-2 border-t border-white/10 bg-black/20 p-4">
+                            {cookies.map((c, i) => (
+                              <div key={i} className="flex gap-2">
+                                <input
+                                  placeholder="Name"
+                                  value={c.name}
+                                  onChange={(e) => updateCookie(i, 'name', e.target.value)}
+                                  className="flex-1 rounded-lg border border-white/10 bg-surface-input px-3 py-2 text-sm text-white placeholder:text-zinc-500 focus:ring-2 focus:ring-accent/30"
+                                />
+                                <input
+                                  placeholder="Value"
+                                  value={c.value}
+                                  onChange={(e) => updateCookie(i, 'value', e.target.value)}
+                                  className="flex-1 rounded-lg border border-white/10 bg-surface-input px-3 py-2 text-sm text-white placeholder:text-zinc-500 focus:ring-2 focus:ring-accent/30"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => removeCookie(i)}
+                                  className="rounded-lg px-2 text-zinc-500 hover:bg-white/10 hover:text-zinc-300"
+                                >
+                                  ×
+                                </button>
+                              </div>
+                            ))}
+                            <button
+                              type="button"
+                              onClick={addCookie}
+                              className="text-sm font-medium text-accent hover:text-accent-glow hover:underline"
+                            >
+                              + Add cookie
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
 
-            <div>
-              <FieldLabel name="URL" htmlFor="url" required hint="Page to scrape" />
-              <input
-                id="url"
-                type="text"
-                required
-                placeholder="example.com/page or https://..."
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                className={inputClass}
-              />
-            </div>
-
-            <AttributesBuilder rows={attributes} onChange={setAttributes} />
-
-            <div>
-              <FieldLabel
-                name="Prompt"
-                htmlFor="prompt"
-                pill={false}
-                hint={
-                  attributes.some((a) => a.name && a.description)
-                    ? 'Optional if you added fields above'
-                    : 'Say what to extract if you didn’t add fields'
-                }
-              />
-              <textarea
-                id="prompt"
-                rows={4}
-                placeholder="e.g. Extract all product titles and prices from the listing."
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-                className={inputClass}
-              />
-            </div>
-
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <div className="mb-2 flex items-center gap-2">
-                  <span className="text-sm font-semibold text-zinc-200">Mode</span>
-                  <button
-                    type="button"
-                    className="text-zinc-500 hover:text-accent"
-                    aria-label="Mode help"
-                    onClick={() => setModeTip(!modeTip)}
-                    onBlur={() => setTimeout(() => setModeTip(false), 200)}
-                  >
-                    <HelpCircle className="h-4 w-4" />
-                  </button>
+            {/* Minimal collapsed view */}
+            {!requestExpanded && (
+              <div className="flex flex-wrap items-end gap-3 pt-2">
+                <div className="min-w-[180px] flex-1">
+                  <input
+                    id="url-collapsed"
+                    type="text"
+                    required
+                    placeholder="URL to scrape"
+                    value={url}
+                    onChange={(e) => setUrl(e.target.value)}
+                    className={inputClass}
+                  />
                 </div>
-                {modeTip && (
-                  <div className="mb-2 rounded-lg border border-white/10 bg-surface-input p-3 text-xs text-zinc-400">
-                    <strong className="text-accent">Standard:</strong> fast.
-                    <br />
-                    <strong className="text-accent">Precision:</strong> deeper
-                    page; more credits.
-                  </div>
-                )}
-                <div className="flex gap-4 rounded-xl border border-white/10 bg-surface-input/50 px-4 py-3 text-sm text-zinc-300">
-                  <label className="flex cursor-pointer items-center gap-2">
-                    <input
-                      type="radio"
-                      name="mode"
-                      checked={mode === 'standard'}
-                      onChange={() => setMode('standard')}
-                      className="border-white/20 bg-surface-input text-accent focus:ring-accent"
-                    />
-                    Standard
-                  </label>
-                  <label className="flex cursor-pointer items-center gap-2">
-                    <input
-                      type="radio"
-                      name="mode"
-                      checked={mode === 'precision'}
-                      onChange={() => setMode('precision')}
-                      className="border-white/20 bg-surface-input text-accent focus:ring-accent"
-                    />
-                    Precision
-                  </label>
-                </div>
-              </div>
-              <div>
-                <FieldLabel
-                  name="Proxy"
-                  htmlFor="proxy"
-                  pill={false}
-                  hint="Country for request"
-                />
-                <select
-                  id="proxy"
-                  value={proxyCountry}
-                  onChange={(e) => setProxyCountry(e.target.value)}
-                  className={`${inputClass} cursor-pointer`}
-                >
-                  {PROXY_COUNTRIES.map((c) => (
-                    <option
-                      key={c.value}
-                      value={c.value}
-                      className="bg-surface-input text-white"
-                    >
-                      {c.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div className="overflow-hidden rounded-xl border border-white/10">
-              <button
-                type="button"
-                onClick={() => setCookiesOpen(!cookiesOpen)}
-                className="flex w-full items-center justify-between px-4 py-3 text-left text-sm font-medium text-zinc-200 hover:bg-white/5"
-              >
-                <span className="text-sm font-semibold text-zinc-200">
-                  Cookies (optional)
-                </span>
-                {cookiesOpen ? (
-                  <ChevronUp className="h-4 w-4 text-accent" />
-                ) : (
-                  <ChevronDown className="h-4 w-4 text-accent" />
-                )}
-              </button>
-              {cookiesOpen && (
-                <div className="space-y-2 border-t border-white/10 bg-black/20 p-4">
-                  {cookies.map((c, i) => (
-                    <div key={i} className="flex gap-2">
-                      <input
-                        placeholder="Name"
-                        value={c.name}
-                        onChange={(e) =>
-                          updateCookie(i, 'name', e.target.value)
-                        }
-                        className="flex-1 rounded-lg border border-white/10 bg-surface-input px-3 py-2 text-sm text-white placeholder:text-zinc-500 focus:ring-2 focus:ring-accent/30"
-                      />
-                      <input
-                        placeholder="Value"
-                        value={c.value}
-                        onChange={(e) =>
-                          updateCookie(i, 'value', e.target.value)
-                        }
-                        className="flex-1 rounded-lg border border-white/10 bg-surface-input px-3 py-2 text-sm text-white placeholder:text-zinc-500 focus:ring-2 focus:ring-accent/30"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => removeCookie(i)}
-                        className="rounded-lg px-2 text-zinc-500 hover:bg-white/10 hover:text-zinc-300"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  ))}
-                  <button
-                    type="button"
-                    onClick={addCookie}
-                    className="text-sm font-medium text-accent hover:text-accent-glow hover:underline"
-                  >
-                    + Add cookie
-                  </button>
-                </div>
-              )}
-            </div>
-
-            <div className="mt-auto space-y-3 border-t border-white/10 pt-6">
-              <div className="run-scrape-shell">
                 <button
                   type="submit"
                   disabled={loading}
-                  className="run-scrape-btn"
+                  className="run-scrape-btn shrink-0"
                 >
                   {loading ? (
-                    <>
-                      <Loader2
-                        className="h-6 w-6 shrink-0 animate-spin text-zinc-900"
-                        aria-hidden
-                      />
-                      <span>Running…</span>
-                    </>
+                    <Loader2 className="h-5 w-5 animate-spin text-zinc-900" />
                   ) : (
                     <>
-                      <Zap
-                        className="h-6 w-6 shrink-0 text-zinc-900"
-                        fill="currentColor"
-                        aria-hidden
-                      />
-                      <span>Run scrape</span>
-                      <Play
-                        className="h-4 w-4 shrink-0 text-zinc-900 opacity-80"
-                        aria-hidden
-                      />
+                      <Zap className="h-5 w-5 text-zinc-900" fill="currentColor" />
+                      <span>Run</span>
                     </>
                   )}
                 </button>
               </div>
-            </div>
-          </div>
+            )}
         </form>
-
-        <section className="panel-card flex flex-col rounded-2xl p-6 sm:p-8">
-          <div className="mb-6 flex items-center gap-3 border-b border-white/10 pb-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent/20 text-accent">
-              <Table2 className="h-5 w-5" aria-hidden />
-            </div>
-            <div>
-              <h2 className="font-display text-lg font-bold text-white">
-                Results
-              </h2>
-              <p className="text-xs text-zinc-500">
-                Table, export &amp; copy JSON
-              </p>
-            </div>
-          </div>
-
-          <div className="flex min-h-[280px] flex-1 flex-col">
-            {loading && (
-              <div className="flex flex-1 flex-col items-center justify-center gap-3 py-16 text-zinc-500">
-                <Loader2
-                  className="h-10 w-10 animate-spin text-accent"
-                  aria-hidden
-                />
-                <span className="text-sm">Calling Parsera…</span>
-              </div>
-            )}
-            {!loading && result == null && !error && (
-              <div className="flex flex-1 flex-col items-center justify-center rounded-xl border border-dashed border-white/10 bg-black/20 px-6 py-16 text-center">
-                <p className="max-w-xs text-sm leading-relaxed text-zinc-500">
-                  Run a scrape to see structured data here. Export as CSV or
-                  Excel when ready.
-                </p>
-              </div>
-            )}
-            {!loading && result != null && (
-              <>
-                <p className="mb-3 text-sm font-medium text-zinc-400">
-                  {n > 0 ? `${n} row${n !== 1 ? 's' : ''}` : 'Result'}
-                </p>
-                <div className="min-h-0 flex-1 overflow-auto">
-                  <EmptyScrapeBanner data={result} />
-                  <ResultsTable
-                    data={result}
-                    extractedAt={resultAt}
-                    baseFilename={slug}
-                  />
-                </div>
-              </>
-            )}
-          </div>
-        </section>
       </div>
 
-      <HistoryPanel refreshKey={historyRefresh} />
+      {/* Main content — Results | History tabs, 75% */}
+      <div className="flex min-h-0 flex-1 flex-col">
+        {/* Tab menu */}
+        <div className="flex shrink-0 border-b border-white/10 px-4 sm:px-6">
+          <button
+            type="button"
+            onClick={() => setActiveTab('results')}
+            className={`flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-medium transition-colors ${
+              activeTab === 'results'
+                ? 'border-accent text-accent'
+                : 'border-transparent text-zinc-400 hover:text-zinc-200'
+            }`}
+          >
+            <Table2 className="h-4 w-4" />
+            Results
+            {n > 0 && (
+              <span className="rounded-full bg-accent/20 px-2 py-0.5 text-xs text-accent">
+                {n}
+              </span>
+            )}
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('history')}
+            className={`flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-medium transition-colors ${
+              activeTab === 'history'
+                ? 'border-accent text-accent'
+                : 'border-transparent text-zinc-400 hover:text-zinc-200'
+            }`}
+          >
+            <History className="h-4 w-4" />
+            History
+          </button>
+        </div>
+
+        {/* Tab content */}
+        <div className="min-h-0 flex-1 overflow-auto p-4 sm:p-6">
+          {activeTab === 'results' && (
+            <div className="flex h-full min-h-[240px] flex-col">
+              {loading && (
+                <div className="flex flex-1 flex-col items-center justify-center gap-3 py-16 text-zinc-500">
+                  <Loader2 className="h-10 w-10 animate-spin text-accent" />
+                  <span className="text-sm">Calling Parsera…</span>
+                </div>
+              )}
+              {!loading && result == null && !error && (
+                <div className="flex flex-1 flex-col items-center justify-center rounded-xl border border-dashed border-white/10 bg-black/20 px-6 py-16 text-center">
+                  <p className="max-w-sm text-sm leading-relaxed text-zinc-500">
+                    Run a scrape to see structured data here. Export as CSV or
+                    Excel when ready.
+                  </p>
+                </div>
+              )}
+              {!loading && result != null && (
+                <>
+                  <p className="mb-3 text-sm font-medium text-zinc-400">
+                    {n > 0 ? `${n} row${n !== 1 ? 's' : ''}` : 'Result'}
+                  </p>
+                  <div className="min-h-0 flex-1 overflow-auto">
+                    <EmptyScrapeBanner data={result} />
+                    <ResultsTable
+                      data={result}
+                      extractedAt={resultAt}
+                      baseFilename={slug}
+                    />
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+          {activeTab === 'history' && (
+            <HistoryPanel refreshKey={historyRefresh} embedded />
+          )}
+        </div>
+      </div>
     </div>
   )
 }

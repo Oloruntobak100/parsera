@@ -25,7 +25,7 @@ export type HistoryListRow = {
 
 type FullRow = HistoryListRow & { result: unknown; attributes: unknown }
 
-export function HistoryPanel({ refreshKey }: { refreshKey: number }) {
+export function HistoryPanel({ refreshKey, embedded }: { refreshKey: number; embedded?: boolean }) {
   const [rows, setRows] = useState<HistoryListRow[]>([])
   const [total, setTotal] = useState(0)
   const [offset, setOffset] = useState(0)
@@ -84,7 +84,7 @@ export function HistoryPanel({ refreshKey }: { refreshKey: number }) {
 
   if (unconfigured) {
     return (
-      <section className="panel-card mt-8 rounded-2xl p-6 sm:p-8">
+      <section className={`panel-card rounded-2xl p-6 sm:p-8 ${embedded ? '' : 'mt-8'}`}>
         <div className="flex items-center gap-3 border-b border-white/10 pb-4">
           <History className="h-6 w-6 text-zinc-500" />
           <h2 className="font-display text-lg font-bold text-white">History</h2>
@@ -106,7 +106,7 @@ export function HistoryPanel({ refreshKey }: { refreshKey: number }) {
 
   return (
     <>
-      <section className="panel-card mt-8 rounded-2xl p-6 sm:p-8">
+      <section className={`panel-card rounded-2xl p-6 sm:p-8 ${embedded ? '' : 'mt-8'}`}>
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent/20 text-accent">

@@ -1,15 +1,19 @@
 'use client'
 
-import { Plus, X } from 'lucide-react'
+import { useState } from 'react'
+import { Plus, X, ChevronDown, ChevronUp } from 'lucide-react'
 
 export type AttributeRow = { name: string; description: string }
 
 type Props = {
   rows: AttributeRow[]
   onChange: (rows: AttributeRow[]) => void
+  collapsible?: boolean
 }
 
-export function AttributesBuilder({ rows, onChange }: Props) {
+export function AttributesBuilder({ rows, onChange, collapsible }: Props) {
+  const [open, setOpen] = useState(false)
+  const count = rows.filter((r) => r.name?.trim() && r.description?.trim()).length
   const add = () => onChange([...rows, { name: '', description: '' }])
   const remove = (i: number) => onChange(rows.filter((_, j) => j !== i))
   const update = (i: number, field: keyof AttributeRow, value: string) => {
@@ -22,8 +26,8 @@ export function AttributesBuilder({ rows, onChange }: Props) {
   const inputRow =
     'w-full rounded-lg border border-white/10 bg-surface-input px-3 py-2.5 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-accent/40 sm:flex-1'
 
-  return (
-    <div className="space-y-3 rounded-xl border border-accent/20 bg-accent/5 p-4">
+  const content = (
+    <>
       <div className="flex flex-wrap items-center justify-end gap-2">
         <button
           type="button"
@@ -83,6 +87,30 @@ export function AttributesBuilder({ rows, onChange }: Props) {
           ))}
         </ul>
       )}
-    </div>
+    </>
   )
+
+  if (collapsible) {
+    return (
+      <div className="overflow-hidden rounded-xl border border-accent/20 bg-accent/5">
+        <button
+          type="button"
+          onClick={() => setOpen(!open)}
+          className="flex w-full items-center justify-between px-4 py-2.5 text-left text-sm font-medium text-zinc-200 hover:bg-white/5"
+        >
+          <span>
+            Fields {count > 0 && <span className="text-accent">({count})</span>}
+          </span>
+          {open ? (
+            <ChevronUp className="h-4 w-4 text-accent" />
+          ) : (
+            <ChevronDown className="h-4 w-4 text-accent" />
+          )}
+        </button>
+        {open && <div className="space-y-3 border-t border-white/10 p-4">{content}</div>}
+      </div>
+    )
+  }
+
+  return <div className="space-y-3 rounded-xl border border-accent/20 bg-accent/5 p-4">{content}</div>
 }
