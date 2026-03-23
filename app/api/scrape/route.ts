@@ -3,6 +3,7 @@ import {
   buildParseraPayload,
   validateExtractPayload,
   attributesAsArray,
+  toParseraApiBody,
 } from '@/lib/parsera'
 import { getServiceSupabase } from '@/lib/supabase-server'
 
@@ -40,13 +41,14 @@ export async function POST(req: NextRequest) {
       cookies: payload.cookies ?? [],
     }
 
+    const apiBody = toParseraApiBody(payload)
     const res = await fetch('https://api.parsera.org/v1/extract', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'X-API-KEY': apiKey,
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(apiBody),
     })
 
     let data: unknown

@@ -36,7 +36,9 @@ export function AttributesBuilder({ rows, onChange }: Props) {
       </div>
       {rows.length === 0 ? (
         <p className="text-sm text-zinc-500">
-          Optional. Each row: short label + what to pull from the page.
+          Optional. Each row: short label + what to pull from the page. For lists of
+          products with prices, add fields: <span className="text-accent">item</span>,{' '}
+          <span className="text-accent">price</span>.
         </p>
       ) : (
         <ul className="space-y-3">

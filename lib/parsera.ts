@@ -1,5 +1,13 @@
 export type ParseraAttribute = { name: string; description: string }
 
+/** Normalize URL: prepend https:// if no protocol (matches Parsera UI behavior) */
+export function normalizeUrl(raw: string): string {
+  const s = raw.trim()
+  if (!s) return s
+  if (/^https?:\/\//i.test(s)) return s
+  return `https://${s}`
+}
+
 /** What we send to Parsera /v1/extract — API requires `attributes` (object), not optional */
 export type ParseraExtractWirePayload = {
   url: string
@@ -42,7 +50,7 @@ export function buildParseraPayload(body: {
   }
 
   const payload: ParseraExtractWirePayload = {
-    url: body.url.trim(),
+    url: normalizeUrl(body.url),
     attributes,
   }
   if (promptTrim) payload.prompt = promptTrim
@@ -60,9 +68,10 @@ export function buildParseraPayload(body: {
 }
 
 export function validateExtractPayload(payload: ParseraExtractWirePayload): string | null {
-  if (!payload.url) return 'URL is required.'
+  const url = normalizeUrl(payload.url)
+  if (!url) return 'URL is required.'
   try {
-    const u = new URL(payload.url)
+    const u = new URL(url)
     if (!['http:', 'https:'].includes(u.protocol)) {
       return 'URL must use http or https.'
     }
@@ -85,4 +94,13 @@ export function attributesAsArray(
     name,
     description,
   }))
+}
+
+/** Parsera API expects attributes as array [{ name, description }], not map. */
+export function toParseraApiBody(payload: ParseraExtractWirePayload): Record<string, unknown> {
+  const { attributes, ...rest } = payload
+  return {
+    ...rest,
+    attributes: attributesAsArray(attributes),
+  }
 }

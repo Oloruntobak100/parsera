@@ -12,6 +12,7 @@ import {
   LayoutGrid,
   Table2,
 } from 'lucide-react'
+import { normalizeUrl } from '@/lib/parsera'
 import {
   AttributesBuilder,
   type AttributeRow,
@@ -23,6 +24,7 @@ import { EmptyScrapeBanner } from '@/components/EmptyScrapeHint'
 
 const PROXY_COUNTRIES = [
   { value: 'UnitedStates', label: 'United States' },
+  { value: 'UnitedArabEmirates', label: 'United Arab Emirates' },
   { value: 'UnitedKingdom', label: 'United Kingdom' },
   { value: 'Germany', label: 'Germany' },
   { value: 'France', label: 'France' },
@@ -67,12 +69,13 @@ export default function HomePage() {
 
   const validateClient = (): string | null => {
     if (!url.trim()) return 'URL is required.'
+    const normalized = normalizeUrl(url)
     try {
-      const u = new URL(url.trim())
+      const u = new URL(normalized)
       if (!['http:', 'https:'].includes(u.protocol))
         return 'URL must use http or https.'
     } catch {
-      return 'Enter a valid URL (include https://).'
+      return 'Enter a valid URL (e.g. example.com or https://...).'
     }
     const hasPrompt = prompt.trim().length > 0
     const hasAttrs = attributes.some(
@@ -106,7 +109,7 @@ export default function HomePage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          url: url.trim(),
+          url: normalizeUrl(url),
           prompt: prompt.trim() || undefined,
           attributes: attrs.length ? attrs : undefined,
           mode,
@@ -137,7 +140,7 @@ export default function HomePage() {
   const n = result != null ? countResults(result) : 0
   const slug = (() => {
     try {
-      return new URL(url.trim()).hostname.replace(/\./g, '-')
+      return new URL(normalizeUrl(url)).hostname.replace(/\./g, '-')
     } catch {
       return 'scrape'
     }
@@ -195,9 +198,9 @@ export default function HomePage() {
               <FieldLabel name="URL" htmlFor="url" required hint="Page to scrape" />
               <input
                 id="url"
-                type="url"
+                type="text"
                 required
-                placeholder="https://example.com/page"
+                placeholder="example.com/page or https://..."
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
                 className={inputClass}
