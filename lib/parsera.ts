@@ -37,16 +37,27 @@ export function buildParseraPayload(body: {
 
   const promptTrim = body.prompt?.trim() ?? ''
   /**
-   * Prompt-only with {} often yields data: [] from Parsera — they expect named
-   * attributes. Inject explicit fields so the model has concrete outputs.
+   * Prompt-only with {} — inject attributes so the model has concrete outputs.
+   * When the prompt asks for item/price lists, use item+price (matches Parsera template).
+   * Otherwise fall back to summary/key_points/page_type.
    */
   if (Object.keys(attributes).length === 0 && promptTrim) {
-    attributes.summary =
-      `Answer in depth: ${promptTrim}. Explain what the page/site is about, who it is for, main themes, products or services if any, and any clear calls-to-action. Use complete sentences.`
-    attributes.key_points =
-      'Extract the most important facts, sections, or claims from the page as a concise bullet-style list (plain text, one line per point).'
-    attributes.page_type =
-      'One short phrase: what kind of page this is (e.g. marketing homepage, blog, SaaS landing, directory).'
+    const p = promptTrim.toLowerCase()
+    const wantsItemPriceList =
+      (p.includes('price') || p.includes('prices')) &&
+      (p.includes('item') || p.includes('items') || p.includes('list') || p.includes('product'))
+
+    if (wantsItemPriceList) {
+      attributes.item = 'Product or item name/description'
+      attributes.price = 'Price as number (e.g. 11.99)'
+    } else {
+      attributes.summary =
+        `Answer in depth: ${promptTrim}. Explain what the page/site is about, who it is for, main themes, products or services if any, and any clear calls-to-action. Use complete sentences.`
+      attributes.key_points =
+        'Extract the most important facts, sections, or claims from the page as a concise bullet-style list (plain text, one line per point).'
+      attributes.page_type =
+        'One short phrase: what kind of page this is (e.g. marketing homepage, blog, SaaS landing, directory).'
+    }
   }
 
   const payload: ParseraExtractWirePayload = {
