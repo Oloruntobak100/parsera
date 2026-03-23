@@ -58,7 +58,7 @@ export default function HomePage() {
   const [historyRefresh, setHistoryRefresh] = useState(0)
   const [resultAt, setResultAt] = useState<Date | null>(null)
   const [activeTab, setActiveTab] = useState<'results' | 'history'>('results')
-  const [requestExpanded, setRequestExpanded] = useState(true)
+  const [requestExpanded, setRequestExpanded] = useState(false)
   const [optionsExpanded, setOptionsExpanded] = useState(false)
 
   const addCookie = () => setCookies([...cookies, { name: '', value: '' }])
@@ -209,7 +209,7 @@ export default function HomePage() {
 
                 {/* Horizontal primary row */}
                 <div className="flex flex-wrap items-end gap-3">
-                  <div className="min-w-[200px] flex-1">
+                  <div className="flex min-h-[5.5rem] min-w-[200px] flex-1 flex-col justify-end">
                     <FieldLabel name="URL" htmlFor="url" required hint="Page to scrape" />
                     <input
                       id="url"
@@ -221,7 +221,7 @@ export default function HomePage() {
                       className={inputClass}
                     />
                   </div>
-                  <div className="min-w-[200px] flex-[2]">
+                  <div className="flex min-h-[5.5rem] min-w-[200px] flex-[2] flex-col justify-end">
                     <FieldLabel
                       name="Prompt"
                       htmlFor="prompt"
@@ -241,22 +241,22 @@ export default function HomePage() {
                       className={inputClass}
                     />
                   </div>
-                  <div className="run-scrape-shell shrink-0">
+                  <div className="run-scrape-shell shrink-0 self-center pb-1">
                     <button
                       type="submit"
                       disabled={loading}
-                      className="run-scrape-btn"
+                      className="run-scrape-btn run-scrape-btn-sm"
                     >
                       {loading ? (
                         <>
-                          <Loader2 className="h-5 w-5 shrink-0 animate-spin text-zinc-900" />
+                          <Loader2 className="h-4 w-4 shrink-0 animate-spin text-zinc-900" />
                           <span>Running…</span>
                         </>
                       ) : (
                         <>
-                          <Zap className="h-5 w-5 shrink-0 text-zinc-900" fill="currentColor" />
+                          <Zap className="h-4 w-4 shrink-0 text-zinc-900" fill="currentColor" />
                           <span>Run scrape</span>
-                          <Play className="h-4 w-4 shrink-0 text-zinc-900 opacity-80" />
+                          <Play className="h-3.5 w-3.5 shrink-0 text-zinc-900 opacity-80" />
                         </>
                       )}
                     </button>
@@ -284,9 +284,9 @@ export default function HomePage() {
                         onChange={setAttributes}
                         collapsible
                       />
-                      <div className="grid gap-4 sm:grid-cols-2">
-                        <div>
-                          <div className="mb-2 flex items-center gap-2">
+                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:items-start">
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
                             <span className="text-sm font-semibold text-zinc-200">Mode</span>
                             <button
                               type="button"
@@ -299,7 +299,7 @@ export default function HomePage() {
                             </button>
                           </div>
                           {modeTip && (
-                            <div className="mb-2 rounded-lg border border-white/10 bg-surface-input p-3 text-xs text-zinc-400">
+                            <div className="rounded-lg border border-white/10 bg-surface-input p-3 text-xs text-zinc-400">
                               <strong className="text-accent">Standard:</strong> fast.{' '}
                               <strong className="text-accent">Precision:</strong> deeper page; more credits.
                             </div>
@@ -327,7 +327,7 @@ export default function HomePage() {
                             </label>
                           </div>
                         </div>
-                        <div>
+                        <div className="space-y-2">
                           <FieldLabel name="Proxy" htmlFor="proxy" pill={false} hint="Country" />
                           <select
                             id="proxy"
@@ -414,7 +414,7 @@ export default function HomePage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="run-scrape-btn shrink-0"
+                  className="run-scrape-btn run-scrape-btn-sm shrink-0"
                 >
                   {loading ? (
                     <Loader2 className="h-5 w-5 animate-spin text-zinc-900" />

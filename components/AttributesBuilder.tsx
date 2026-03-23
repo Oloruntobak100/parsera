@@ -99,7 +99,11 @@ export function AttributesBuilder({ rows, onChange, collapsible }: Props) {
           className="flex w-full items-center justify-between px-4 py-2.5 text-left text-sm font-medium text-zinc-200 hover:bg-white/5"
         >
           <span>
-            Fields {count > 0 && <span className="text-accent">({count})</span>}
+            {count > 0 ? (
+              <>Fields <span className="text-accent">({count})</span></>
+            ) : (
+              'Click to Add Field'
+            )}
           </span>
           {open ? (
             <ChevronUp className="h-4 w-4 text-accent" />
